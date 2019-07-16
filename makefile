@@ -70,4 +70,4 @@ $(LIB): $(OBJFILES)
 	$(LIBTOOL) rcs $(LIB) $(OBJFILES)
 
 $(TARGET): $(OBJFILES) $(BUILD)/test.o $(LIB)
-	$(LINKER) -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -L/. -lstdc++ -lpthread -lrpi -o $(TARGET) $(BUILD)/test.o
+	$(LINKER) -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -L. -lstdc++ -lpthread -lrpi -o $(TARGET) $(BUILD)/test.o
