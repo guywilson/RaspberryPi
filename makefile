@@ -26,7 +26,7 @@ LINKER=g++
 LIBTOOL=ar
 
 # C compiler flags (Release)
-CPPFLAGS=-c -fpermissive -Wall -std=c++11 
+CPPFLAGS=-c -fpermissive -Wall -std=c++11
 
 # Object files (in linker ',' seperated format)
 OBJFILES=$(BUILD)/pifactory.o $(BUILD)/rasppi.o $(BUILD)/swtimer.o $(BUILD)/peripheral.o $(BUILD)/gpio.o $(BUILD)/clock.o $(BUILD)/pwm.o $(BUILD)/spi.o $(BUILD)/exception.o
@@ -70,4 +70,4 @@ $(LIB): $(OBJFILES)
 	$(LIBTOOL) rcs $(LIB) $(OBJFILES)
 
 $(TARGET): $(OBJFILES) $(BUILD)/test.o $(LIB)
-	$(LINKER) -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -L. -lstdc++ -lpthread -lrpi -o $(TARGET) $(BUILD)/test.o
+	$(LINKER) -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -L. -lstdc++ -lpthread -o $(TARGET) $(BUILD)/test.o -lrpi
