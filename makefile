@@ -2,7 +2,7 @@
 #                                                                             #
 # MAKEFILE for RaspberryPi Control Library                                    #
 #                                                                             #
-# © Guy Wilson 2016                                                           #
+# ï¿½ Guy Wilson 2016                                                           #
 #                                                                             #
 ###############################################################################
 
@@ -15,17 +15,21 @@ BUILD=build
 # What is our target
 TARGET=test
 
+LIB=librpi.a
+
 # C compiler
 CPP=g++
 
 # Linker
 LINKER=g++
 
+LIBTOOL=ar
+
 # C compiler flags (Release)
 CPPFLAGS=-c -fpermissive -Wall -std=c++11 
 
 # Object files (in linker ',' seperated format)
-OBJFILES=$(BUILD)/test.o $(BUILD)/pifactory.o $(BUILD)/rasppi.o $(BUILD)/swtimer.o $(BUILD)/peripheral.o $(BUILD)/gpio.o $(BUILD)/clock.o $(BUILD)/pwm.o $(BUILD)/spi.o $(BUILD)/exception.o
+OBJFILES=$(BUILD)/pifactory.o $(BUILD)/rasppi.o $(BUILD)/swtimer.o $(BUILD)/peripheral.o $(BUILD)/gpio.o $(BUILD)/clock.o $(BUILD)/pwm.o $(BUILD)/spi.o $(BUILD)/exception.o
 
 # Target
 all: $(TARGET)
@@ -62,5 +66,8 @@ $(BUILD)/spi.o: $(SOURCE)/spi.cpp $(SOURCE)/spi.h $(SOURCE)/register.h $(SOURCE)
 $(BUILD)/exception.o: $(SOURCE)/exception.cpp $(SOURCE)/exception.h
 	$(CPP) $(CPPFLAGS) -o $(BUILD)/exception.o $(SOURCE)/exception.cpp
 
-$(TARGET): $(OBJFILES)
-	$(LINKER) -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -lstdc++ -o $(TARGET) $(OBJFILES) -lpthread
+$(LIB): $(OBJFILES)
+	$(LIBTOOL) rcs $(LIB) $(OBJFILES)
+
+$(TARGET): $(OBJFILES) $(BUILD)/test.o $(LIB)
+	$(LINKER) -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -L/. -lstdc++ -lpthread -lrpi -o $(TARGET) $(OBJFILES) $(BUILD)/test.o

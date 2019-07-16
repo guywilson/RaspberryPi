@@ -58,6 +58,7 @@ RaspberryPi::~RaspberryPi()
 
 void RaspberryPi::_setMaxPriority()
 {
+#ifndef __APPLE__
 	struct sched_param	sched;
 	int					ret;
 	int					maxPriority;
@@ -86,6 +87,7 @@ void RaspberryPi::_setMaxPriority()
 						__LINE__);
 		}
 	}
+#endif
 }
 
 uint32_t RaspberryPi::getBaseAddress()
