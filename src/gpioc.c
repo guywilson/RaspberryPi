@@ -41,6 +41,7 @@ volatile GPIO_MAP * gpioMap;
 volatile uint32_t *	map;
 
 int                 memFd;
+uint8_t				pullUpDownState[54];
 
 int _getModel()
 {
@@ -390,4 +391,61 @@ int gpioc_getPinState(int pin)
 	level = reg > 0 ? 1 : 0;
 	
 	return level;
+}
+
+int gpioc_pullDown(int pin)
+{
+	int			registerNum = 0;
+	uint32_t	mask;
+	
+	/*
+	** Remember the pull up/down state for the pin...
+	*/
+	pullUpDownState[pin] = GPIOC_PIN_PULL_DOWN;
+	
+	registerNum = getTwinRegisterNum(pin);
+	mask = getTwinRegisterMask(pin);
+	
+	setGPPUD((uint32_t)GPIOC_PIN_PULL_DOWN);
+	
+	usleep(10);
+	setGPPUDCLKN(registerNum, mask);
+	usleep(10);
+	
+	setGPPUD((uint32_t)GPIOC_PIN_PULL_OFF);
+
+	setGPPUDCLKN(registerNum, 0x00);
+
+	return 0;
+}
+
+int gpioc_pullUp(int pin)
+{
+	int			registerNum = 0;
+	uint32_t	mask;
+	
+	/*
+	** Remember the pull up/down state for the pin...
+	*/
+	pullUpDownState[pin] = GPIOC_PIN_PULL_UP;
+	
+	registerNum = getTwinRegisterNum(pin);
+	mask = getTwinRegisterMask(pin);
+	
+	setGPPUD((uint32_t)GPIOC_PIN_PULL_UP);
+	
+	usleep(10);
+	setGPPUDCLKN(registerNum, mask);
+	usleep(10);
+	
+	setGPPUD((uint32_t)GPIOC_PIN_PULL_OFF);
+
+	setGPPUDCLKN(registerNum, 0x00);
+
+	return 0;
+}
+
+int gpioc_getPullState(int pin)
+{
+	return pullUpDownState[pin];
 }

@@ -6,6 +6,10 @@
 #define GPIOC_PIN_FUNCTION_INPUT        0
 #define GPIOC_PIN_FUNCTION_OUTPUT       1
 
+#define GPIOC_PIN_PULL_DOWN				0x01
+#define GPIOC_PIN_PULL_UP				0x02
+#define GPIOC_PIN_PULL_OFF				0x00
+
 typedef struct {
 //	Type			Name			Description								Size	R/W
 //-------------------------------------------------------------------------------------
@@ -44,5 +48,8 @@ int gpioc_getPinDir(int pin);
 int gpioc_setPinOn(int pin);
 int gpioc_setPinOff(int pin);
 int gpioc_getPinState(int pin);
+int gpioc_pullDown(int pin);
+int gpioc_pullUp(int pin);
+int gpioc_getPullState(int pin);
 
 #endif
