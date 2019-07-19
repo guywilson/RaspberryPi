@@ -14,11 +14,15 @@ BUILD=build
 
 # What is our target
 TARGET=test
+GPIOC_TARGET=gpioc_test
 
 LIB=librpi.a
+GPIOCLIB=libgpioc.a
 
 # C compiler
 CPP=g++
+
+C=gcc
 
 # Linker
 LINKER=g++
@@ -27,6 +31,8 @@ LIBTOOL=ar
 
 # C compiler flags (Release)
 CPPFLAGS=-c -fpermissive -Wall -std=c++11
+
+CFLAGS=-c -Wall
 
 # Object files (in linker ',' seperated format)
 OBJFILES=$(BUILD)/pifactory.o $(BUILD)/rasppi.o $(BUILD)/swtimer.o $(BUILD)/peripheral.o $(BUILD)/gpio.o $(BUILD)/clock.o $(BUILD)/pwm.o $(BUILD)/spi.o $(BUILD)/exception.o
@@ -71,3 +77,17 @@ $(LIB): $(OBJFILES)
 
 $(TARGET): $(OBJFILES) $(BUILD)/test.o $(LIB)
 	$(LINKER) -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -L. -lstdc++ -lpthread -o $(TARGET) $(BUILD)/test.o -lrpi
+
+gpioc: $(GPIOC_TARGET)
+
+$(BUILD)/gpioc.o: $(SOURCE)/gpioc.c $(SOURCE)/gpioc.h
+	$(C) $(CFLAGS) -o $(BUILD)/gpioc.o $(SOURCE)/gpioc.c
+
+$(BUILD)/gpioc_test.o: $(SOURCE)/gpioc_test.c $(SOURCE)/gpioc.h
+	$(C) $(CFLAGS) -o $(BUILD)/gpioc_test.o $(SOURCE)/gpioc_test.c
+
+$(GPIOCLIB): $(BUILD)/gpioc.o
+	$(LIBTOOL) rcs $(GPIOCLIB) $(BUILD)/gpioc.o
+
+$(GPIOC_TARGET): $(BUILD)/gpioc_test.o $(GPIOCLIB)
+	$(C) -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -L. -o gpioc_test $(BUILD)/gpioc_test.o -lgpioc
