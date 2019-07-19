@@ -90,4 +90,4 @@ $(GPIOCLIB): $(BUILD)/gpioc.o
 	$(LIBTOOL) rcs $(GPIOCLIB) $(BUILD)/gpioc.o
 
 $(GPIOC_TARGET): $(BUILD)/gpioc_test.o $(GPIOCLIB)
-	$(C) -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -L. -o gpioc_test $(BUILD)/gpioc_test.o -lgpioc
+	$(C) -o gpioc_test $(BUILD)/gpioc_test.o -lgpioc
