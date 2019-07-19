@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <dirent.h>
 #include <fcntl.h>
 #include <assert.h>
@@ -306,6 +307,8 @@ int gpioc_setPinInput(int pin)
 	newMask = currentMask & (~(7 << shift));
 	
 	setGPFSELN(registerNum, newMask);
+
+    return 0;
 }
 
 int gpioc_setPinOutput(int pin)
@@ -323,6 +326,8 @@ int gpioc_setPinOutput(int pin)
 	newMask = (currentMask & (~(7 << shift))) | (0x00000001 << shift);
 	
 	setGPFSELN(registerNum, newMask);
+
+    return 0;
 }
 
 int gpioc_getPinDir(int pin)
@@ -351,6 +356,8 @@ int gpioc_setPinOn(int pin)
 	mask = getTwinRegisterMask(pin);
 	
 	setGPSETN(registerNum, mask);
+
+    return 0;
 }
 
 int gpioc_setPinOff(int pin)
@@ -362,6 +369,8 @@ int gpioc_setPinOff(int pin)
 	mask = getTwinRegisterMask(pin);
 	
 	setGPCLRN(registerNum, mask);
+
+    return 0;
 }
 
 int gpioc_getPinState(int pin)
