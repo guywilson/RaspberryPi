@@ -1,93 +1,89 @@
 ###############################################################################
 #                                                                             #
-# MAKEFILE for RaspberryPi Control Library                                    #
+# MAKEFILE for Raspberry Pi Library                                           #
 #                                                                             #
-# � Guy Wilson 2016                                                           #
+# (c) Guy Wilson 2021                                                         #
 #                                                                             #
 ###############################################################################
 
-# Source directory
-SOURCE=src
-
-# Build output directory
-BUILD=build
+# Directories
+SOURCE = src
+BUILD = build
+DEP = dep
 
 # What is our target
-TARGET=test
-GPIOC_TARGET=gpioc_test
+TARGET = librpi.a
+GPIOC_LIB = libgpioc.a
+LIB_TEST = test
+GPIOC_TEST = gpioc_test
 
-LIB=librpi.a
-GPIOCLIB=libgpioc.a
+# Tools
+VBUILD = vbuild
+CPP = g++
+C = gcc
+LIBMGR = ar
+LINKER = g++
 
-# C compiler
-CPP=g++
+# precompile step
+PRECOMPILE = @ mkdir -p $(BUILD) $(DEP)
+# postcompile step
+POSTCOMPILE = @ mv -f $(DEP)/$*.Td $(DEP)/$*.d
 
-C=gcc
+CPPFLAGS = -c -O2 -Wall -pedantic -fPIC -std=c++11
+CFLAGS = -c -O2 -Wall -pedantic -fPIC
+DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP)/$*.Td
+LIBFLAGS = rcs
 
-# Linker
-LINKER=g++
+# Libraries
+STDLIBS = -lstdc++ -lpthread
 
-LIBTOOL=ar
+COMPILE.cpp = $(CPP) $(CPPFLAGS) $(DEPFLAGS) -o $@
+COMPILE.c = $(C) $(CFLAGS) $(DEPFLAGS) -o $@
+LIB.o = $(LIBMGR) $(LIBFLAGS) $@
+LINK.o = $(LINKER) $(STDLIBS) -o $@
 
-# C compiler flags (Release)
-CPPFLAGS=-c -fpermissive -Wall -std=c++11
+CSRCFILES = $(wildcard $(SOURCE)/*.c)
+CPPSRCFILES = $(wildcard $(SOURCE)/*.cpp)
+OBJFILES := $(patsubst $(SOURCE)/%.c, $(BUILD)/%.o, $(CSRCFILES)) $(patsubst $(SOURCE)/%.cpp, $(BUILD)/%.o, $(CPPSRCFILES))
+OBJFILES := $(filter-out $(BUILD)/test.o, $(OBJFILES))
+OBJFILES := $(filter-out $(BUILD)/gpioc_test.o, $(OBJFILES))
+DEPFILES = $(patsubst $(SOURCE)/%.c, $(DEP)/%.d, $(CSRCFILES)) $(patsubst $(SOURCE)/%.cpp, $(DEP)/%.d, $(CPPSRCFILES))
 
-CFLAGS=-c -Wall
+all: $(TARGET) $(GPIOC_LIB) $(LIB_TEST) $(GPIOC_TEST)
 
-# Object files (in linker ',' seperated format)
-OBJFILES=$(BUILD)/pifactory.o $(BUILD)/rasppi.o $(BUILD)/swtimer.o $(BUILD)/peripheral.o $(BUILD)/gpio.o $(BUILD)/clock.o $(BUILD)/pwm.o $(BUILD)/spi.o $(BUILD)/exception.o
+$(TARGET): $(OBJFILES)
+	$(LIB.o) $^
 
-# Target
-all: $(TARGET)
+$(GPIOC_LIB): $(BUILD)/gpioc.o
+	$(LIB.o) $^
 
-# Compile C source files
-#
-$(BUILD)/test.o: $(SOURCE)/test.cpp $(SOURCE)/rasppi.h $(SOURCE)/gpio.h $(SOURCE)/types.h $(SOURCE)/swtimer.h
-	$(CPP) $(CPPFLAGS) -o $(BUILD)/test.o $(SOURCE)/test.cpp
+$(LIB_TEST): $(BUILD)/test.o
+	$(LINK.o) $^ $(TARGET)
 
-$(BUILD)/pifactory.o: $(SOURCE)/pifactory.cpp $(SOURCE)/pifactory.h $(SOURCE)/rasppi.h $(SOURCE)/exception.h
-	$(CPP) $(CPPFLAGS) -o $(BUILD)/pifactory.o $(SOURCE)/pifactory.cpp
+$(GPIOC_TEST): $(BUILD)/gpioc_test.o
+	$(LINK.o) $^ $(GPIOC_LIB)
 
-$(BUILD)/rasppi.o: $(SOURCE)/rasppi.cpp $(SOURCE)/rasppi.h $(SOURCE)/gpio.h $(SOURCE)/types.h $(SOURCE)/exception.h
-	$(CPP) $(CPPFLAGS) -o $(BUILD)/rasppi.o $(SOURCE)/rasppi.cpp
+$(BUILD)/%.o: $(SOURCE)/%.c
+$(BUILD)/%.o: $(SOURCE)/%.c $(DEP)/%.d
+	$(PRECOMPILE)
+	$(COMPILE.c) $<
+	$(POSTCOMPILE)
 
-$(BUILD)/swtimer.o: $(SOURCE)/swtimer.cpp $(SOURCE)/swtimer.h $(SOURCE)/exception.h
-	$(CPP) $(CPPFLAGS) -o $(BUILD)/swtimer.o $(SOURCE)/swtimer.cpp
+$(BUILD)/%.o: $(SOURCE)/%.cpp
+$(BUILD)/%.o: $(SOURCE)/%.cpp $(DEP)/%.d
+	$(PRECOMPILE)
+	$(COMPILE.cpp) $<
+	$(POSTCOMPILE)
 
-$(BUILD)/peripheral.o: $(SOURCE)/peripheral.cpp $(SOURCE)/peripheral.h $(SOURCE)/exception.h
-	$(CPP) $(CPPFLAGS) -o $(BUILD)/peripheral.o $(SOURCE)/peripheral.cpp
+.PRECIOUS = $(DEP)/%.d
+$(DEP)/%.d: ;
 
-$(BUILD)/gpio.o: $(SOURCE)/gpio.cpp $(SOURCE)/gpio.h $(SOURCE)/register.h $(SOURCE)/types.h $(SOURCE)/swtimer.h
-	$(CPP) $(CPPFLAGS) -o $(BUILD)/gpio.o $(SOURCE)/gpio.cpp
+-include $(DEPFILES)
 
-$(BUILD)/clock.o: $(SOURCE)/clock.cpp $(SOURCE)/clock.h $(SOURCE)/register.h $(SOURCE)/types.h $(SOURCE)/exception.h $(SOURCE)/swtimer.h
-	$(CPP) $(CPPFLAGS) -o $(BUILD)/clock.o $(SOURCE)/clock.cpp
+install: $(TARGET)
+	cp $(TARGET) /usr/local/bin
 
-$(BUILD)/pwm.o: $(SOURCE)/pwm.cpp $(SOURCE)/pwm.h $(SOURCE)/register.h $(SOURCE)/types.h $(SOURCE)/swtimer.h
-	$(CPP) $(CPPFLAGS) -o $(BUILD)/pwm.o $(SOURCE)/pwm.cpp
-
-$(BUILD)/spi.o: $(SOURCE)/spi.cpp $(SOURCE)/spi.h $(SOURCE)/register.h $(SOURCE)/types.h $(SOURCE)/swtimer.h
-	$(CPP) $(CPPFLAGS) -o $(BUILD)/spi.o $(SOURCE)/spi.cpp
-
-$(BUILD)/exception.o: $(SOURCE)/exception.cpp $(SOURCE)/exception.h
-	$(CPP) $(CPPFLAGS) -o $(BUILD)/exception.o $(SOURCE)/exception.cpp
-
-$(LIB): $(OBJFILES)
-	$(LIBTOOL) rcs $(LIB) $(OBJFILES)
-
-$(TARGET): $(OBJFILES) $(BUILD)/test.o $(LIB)
-	$(LINKER) -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -L. -lstdc++ -lpthread -o $(TARGET) $(BUILD)/test.o -lrpi
-
-gpioc: $(GPIOC_TARGET)
-
-$(BUILD)/gpioc.o: $(SOURCE)/gpioc.c $(SOURCE)/gpioc.h
-	$(C) $(CFLAGS) -o $(BUILD)/gpioc.o $(SOURCE)/gpioc.c
-
-$(BUILD)/gpioc_test.o: $(SOURCE)/gpioc_test.c $(SOURCE)/gpioc.h
-	$(C) $(CFLAGS) -o $(BUILD)/gpioc_test.o $(SOURCE)/gpioc_test.c
-
-$(GPIOCLIB): $(BUILD)/gpioc.o
-	$(LIBTOOL) rcs $(GPIOCLIB) $(BUILD)/gpioc.o
-
-$(GPIOC_TARGET): $(BUILD)/gpioc_test.o $(GPIOCLIB)
-	$(C) -o gpioc_test $(BUILD)/gpioc_test.o -lgpioc
+clean:
+	rm -r $(BUILD)
+	rm -r $(DEP)
+	rm $(TARGET)

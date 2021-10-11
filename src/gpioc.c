@@ -38,7 +38,7 @@
 #define getTwinRegisterMask(pin)        (1 << (pin > 31 ? (pin - 32) : pin))
 
 volatile GPIO_MAP * gpioMap;
-volatile uint32_t *	map;
+volatile void *		map;
 
 int                 memFd;
 uint8_t				pullUpDownState[54];
@@ -270,7 +270,7 @@ int gpioc_open()
 			break ;
 	}
 
-	map = (uint32_t *)mmap(
+	map = 			mmap(
 						0,
 						BLOCK_SIZE,
 						PROT_READ | PROT_WRITE,
@@ -278,7 +278,7 @@ int gpioc_open()
 						memFd,
 						pPeripheralBase + GPIO_BASE);
 
-	if (map < 0L) {
+	if (map < (void *)0) {
         printf("gpioc_open: Failed to map GPIO memory\n");
         return -1;
 	}

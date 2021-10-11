@@ -15,7 +15,7 @@
 
 BCM238X_Peripheral::BCM238X_Peripheral(int fd, uint32_t baseAddress)
 {
-	map = (uint32_t *)mmap(
+	map = 			mmap(
 						0,
 						BLOCK_SIZE,
 						PROT_READ | PROT_WRITE,
@@ -23,7 +23,7 @@ BCM238X_Peripheral::BCM238X_Peripheral(int fd, uint32_t baseAddress)
 						fd,
 						baseAddress);
 
-	if (map < 0L) {
+	if (map < (void *)0) {
 		throw new Exception(
 					ERR_MEMORY_MAP_ERROR,
 					"Failed to map peripheral to system memory",
@@ -39,7 +39,7 @@ BCM238X_Peripheral::~BCM238X_Peripheral()
 	munmap((uint32_t *)map, BLOCK_SIZE);
 }
 
-volatile uint32_t * BCM238X_Peripheral::getMemoryMap()
+volatile void * BCM238X_Peripheral::getMemoryMap()
 {
 	return map;
 }

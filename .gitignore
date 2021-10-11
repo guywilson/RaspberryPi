@@ -1,2 +1,6 @@
 build/*
+dep/*
+librpi.a
 libgpioc.a
+gpioc_test
+test
