@@ -21,6 +21,7 @@
 
 #define	RASPPI_PERI_BASE_OLD	0x20000000
 #define	RASPPI_PERI_BASE_NEW	0x3F000000
+#define RASPPI_PERI_BASE_4		0x7E000000
 
 RaspberryPi * PiFactory::makePi()
 {
@@ -28,6 +29,8 @@ RaspberryPi * PiFactory::makePi()
 	RaspberryPi	*	pi;
 	
 	model = _getModel();
+	
+	printf("Model is %d\n", model);
 	
 	switch (model) {
 		case PI_MODEL_A:
