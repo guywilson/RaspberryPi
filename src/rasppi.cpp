@@ -51,6 +51,8 @@ RaspberryPi::RaspberryPi(
 
 	pPeriBase = baseAddress;
 	
+	printf("Revision info: %s\n", getInfoString());
+	
 	_setMaxPriority();
 }
 
