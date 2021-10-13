@@ -43,9 +43,9 @@ RaspberryPi * PiFactory::makePi()
 		revisionId = revisionId & 0xFFFF;
 
 		/************************************************
-		**
-		** Old Revision Codes
-		**
+		**                                             **
+		** Old Revision Codes                          **
+		**                                             **
 		*************************************************
 
 		Code	Model	Revision	RAM		Manufacturer

@@ -52,7 +52,7 @@ RaspberryPi::RaspberryPi(
 	pPeriBase = baseAddress;
 	
 	printf("Revision info: %s\n", getInfoString());
-	
+
 	_setMaxPriority();
 }
 
@@ -68,6 +68,10 @@ RaspberryPi::~RaspberryPi()
 
 	if (this->pPWM != nullptr) {
 		delete pPWM;
+	}
+
+	if (this->pszInfo != nullptr) {
+		free(pszInfo);
 	}
 }
 

@@ -57,10 +57,10 @@ $(TARGET): $(OBJFILES)
 $(GPIOC_LIB): $(BUILD)/gpioc.o
 	$(LIB.o) $^
 
-$(LIB_TEST): $(BUILD)/test.o
+$(LIB_TEST): $(TARGET) $(BUILD)/test.o
 	$(LINK.o) $^ $(TARGET)
 
-$(GPIOC_TEST): $(BUILD)/gpioc_test.o
+$(GPIOC_TEST): $(GPIOC_LIB) $(BUILD)/gpioc_test.o
 	$(LINK.o) $^ $(GPIOC_LIB)
 
 $(BUILD)/%.o: $(SOURCE)/%.c
