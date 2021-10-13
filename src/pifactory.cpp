@@ -25,40 +25,235 @@
 
 RaspberryPi * PiFactory::makePi()
 {
-	int				model;
-	RaspberryPi	*	pi;
+	uint32_t						revisionId;
+	RaspberryPi	*					pi;
+	RaspberryPi::Manufacturer		manufacturer;
+	RaspberryPi::MemorySize			memSize;
+	RaspberryPi::Model				model;
+	RaspberryPi::Processor			proc;
+	const char *					pszRevision;
+	uint32_t						revisionIdCopy;
+	char 							szRevision[8];
+
+	revisionId = _getRevision();
 	
-	model = _getModel();
-	
-	printf("Model is %d\n", model);
-	
+	bool isNew = (revisionId & (1 << 23)) != 0 ? true : false;
+
+	if (!isNew) {
+		revisionId = revisionId & 0xFFFF;
+
+		/************************************************
+		**
+		** Old Revision Codes
+		**
+		*************************************************
+
+		Code	Model	Revision	RAM		Manufacturer
+		----	-----	--------	-----	------------
+		0002	B		1.0			256MB	Egoman
+		0003	B		1.0			256MB	Egoman
+		0004	B		2.0			256MB	Sony UK
+		0005	B		2.0			256MB	Qisda
+		0006	B		2.0			256MB	Egoman
+		0007	A		2.0			256MB	Egoman
+		0008	A		2.0			256MB	Sony UK
+		0009	A		2.0			256MB	Qisda
+		000d	B		2.0			512MB	Egoman
+		000e	B		2.0			512MB	Sony UK
+		000f	B		2.0			512MB	Egoman
+		0010	B+		1.2			512MB	Sony UK
+		0011	CM1		1.0			512MB	Sony UK
+		0012	A+		1.1			256MB	Sony UK
+		0013	B+		1.2			512MB	Embest
+		0014	CM1		1.0			512MB	Embest
+		0015	A+		1.1			512MB	Embest
+		************************************************/
+
+		switch (revisionId) {
+			case 0x0002:
+			case 0x0003:
+				manufacturer = RaspberryPi::Manufacturer::Egoman;
+				memSize = RaspberryPi::MemorySize::_256Mb;
+				model = RaspberryPi::Model::Rpi_Model_B;
+				pszRevision = "1.0";
+				break;
+
+			case 0x0004:
+				manufacturer = RaspberryPi::Manufacturer::SonyUK;
+				memSize = RaspberryPi::MemorySize::_256Mb;
+				model = RaspberryPi::Model::Rpi_Model_B;
+				pszRevision = "2.0";
+				break;
+
+			case 0x0005:
+				manufacturer = RaspberryPi::Manufacturer::Qisda;
+				memSize = RaspberryPi::MemorySize::_256Mb;
+				model = RaspberryPi::Model::Rpi_Model_B;
+				pszRevision = "2.0";
+				break;
+
+			case 0x0006:
+				manufacturer = RaspberryPi::Manufacturer::Egoman;
+				memSize = RaspberryPi::MemorySize::_256Mb;
+				model = RaspberryPi::Model::Rpi_Model_B;
+				pszRevision = "2.0";
+				break;
+
+			case 0x0007:
+				manufacturer = RaspberryPi::Manufacturer::Egoman;
+				memSize = RaspberryPi::MemorySize::_256Mb;
+				model = RaspberryPi::Model::Rpi_Model_A;
+				pszRevision = "2.0";
+				break;
+
+			case 0x0008:
+				manufacturer = RaspberryPi::Manufacturer::SonyUK;
+				memSize = RaspberryPi::MemorySize::_256Mb;
+				model = RaspberryPi::Model::Rpi_Model_A;
+				pszRevision = "2.0";
+				break;
+
+			case 0x0009:
+				manufacturer = RaspberryPi::Manufacturer::Qisda;
+				memSize = RaspberryPi::MemorySize::_256Mb;
+				model = RaspberryPi::Model::Rpi_Model_A;
+				pszRevision = "2.0";
+				break;
+
+			case 0x000D:
+			case 0x000F:
+				manufacturer = RaspberryPi::Manufacturer::Egoman;
+				memSize = RaspberryPi::MemorySize::_512Mb;
+				model = RaspberryPi::Model::Rpi_Model_B;
+				pszRevision = "2.0";
+				break;
+
+			case 0x000E:
+				manufacturer = RaspberryPi::Manufacturer::SonyUK;
+				memSize = RaspberryPi::MemorySize::_512Mb;
+				model = RaspberryPi::Model::Rpi_Model_B;
+				pszRevision = "2.0";
+				break;
+
+			case 0x0010:
+				manufacturer = RaspberryPi::Manufacturer::SonyUK;
+				memSize = RaspberryPi::MemorySize::_512Mb;
+				model = RaspberryPi::Model::Rpi_Model_B_plus;
+				pszRevision = "1.2";
+				break;
+
+			case 0x0011:
+				manufacturer = RaspberryPi::Manufacturer::SonyUK;
+				memSize = RaspberryPi::MemorySize::_512Mb;
+				model = RaspberryPi::Model::Compute_Module1;
+				pszRevision = "1.0";
+				break;
+
+			case 0x0012:
+				manufacturer = RaspberryPi::Manufacturer::SonyUK;
+				memSize = RaspberryPi::MemorySize::_256Mb;
+				model = RaspberryPi::Model::Rpi_Model_A_plus;
+				pszRevision = "1.1";
+				break;
+
+			case 0x0013:
+				manufacturer = RaspberryPi::Manufacturer::Embest;
+				memSize = RaspberryPi::MemorySize::_512Mb;
+				model = RaspberryPi::Model::Rpi_Model_B_plus;
+				pszRevision = "1.2";
+				break;
+
+			case 0x0014:
+				manufacturer = RaspberryPi::Manufacturer::Embest;
+				memSize = RaspberryPi::MemorySize::_512Mb;
+				model = RaspberryPi::Model::Compute_Module1;
+				pszRevision = "1.0";
+				break;
+
+			case 0x0015:
+				manufacturer = RaspberryPi::Manufacturer::Embest;
+				memSize = RaspberryPi::MemorySize::_512Mb;
+				model = RaspberryPi::Model::Rpi_Model_A_plus;
+				pszRevision = "1.1";
+				break;
+		}
+	}
+	else {
+		revisionIdCopy = revisionId;
+
+		int rev = (int)(revisionIdCopy & 0x0F);
+		sprintf(szRevision, "1.%d", rev);
+
+		revisionIdCopy = revisionIdCopy >> 4;
+		model = (RaspberryPi::Model)(revisionIdCopy & 0xFF);
+
+		revisionIdCopy = revisionIdCopy >> 8;
+		proc = (RaspberryPi::Processor)(revisionIdCopy & 0x0F);
+
+		revisionIdCopy = revisionIdCopy >> 4;
+		manufacturer = (RaspberryPi::Manufacturer)(revisionIdCopy & 0x0F);
+
+		revisionIdCopy = revisionIdCopy >> 4;
+		memSize = (RaspberryPi::MemorySize)(revisionIdCopy & 0x07);
+	}
+
+	uint32_t	baseAddress;
+
 	switch (model) {
-		case PI_MODEL_A:
-		case PI_MODEL_B:
-		case PI_MODEL_AP:
-		case PI_MODEL_BP:
-		case PI_ALPHA:
-		case PI_MODEL_CM:
-		case PI_MODEL_ZERO:
-			pi = new RaspberryPiOriginal(RASPPI_PERI_BASE_OLD);
+		case RaspberryPi::Model::Rpi_Model_A:
+		case RaspberryPi::Model::Rpi_Model_B:
+		case RaspberryPi::Model::Rpi_Model_A_plus:
+		case RaspberryPi::Model::Rpi_Model_B_plus:
+		case RaspberryPi::Model::Alpha_prototype:
+		case RaspberryPi::Model::Compute_Module1:
+		case RaspberryPi::Model::Rpi_Zero:
+			baseAddress = RASPPI_PERI_BASE_OLD;
+			break;
+
+		case RaspberryPi::Model::Rpi_Model_2B:
+		case RaspberryPi::Model::Rpi_Model_3B:
+		case RaspberryPi::Model::Rpi_Model_3A_plus:
+		case RaspberryPi::Model::Rpi_ZeroW:
+		case RaspberryPi::Model::Compute_Module3:
+		case RaspberryPi::Model::Compute_Module3_plus:
+			baseAddress = RASPPI_PERI_BASE_NEW;
 			break ;
 
+		case RaspberryPi::Model::Rpi_Model_4B:
+		case RaspberryPi::Model::Rpi_Model_400:
+		case RaspberryPi::Model::Compute_Module4:
+			baseAddress = RASPPI_PERI_BASE_4;
+			break;
+
 		default:
-			pi = new RaspberryPiNew(RASPPI_PERI_BASE_NEW);
-			break ;
+			throw new Exception(
+					ERR_FILE_OPEN_FAILURE,
+					"Unsupported Rpi Model",
+					__FILE__,
+					"PiFactory",
+					"init()",
+					__LINE__);
+			break;
 	}
 	
+	pi = new RaspberryPi(
+					model,
+					memSize,
+					proc,
+					manufacturer,
+					szRevision,
+					baseAddress);
+
 	return pi;
 }
 
-int PiFactory::_getModel()
+uint32_t PiFactory::_getRevision()
 {
 	FILE *			cpuFd;
-	char 			szLine[120];
+	char 			szLine[128];
 	char *			c;
-	unsigned int	revision;
-	unsigned int	lineLength;
-	int				model;
+	uint32_t		revision;
+	uint32_t		lineLength;
 
 	cpuFd = fopen("/proc/cpuinfo", "r");
 	
@@ -72,7 +267,7 @@ int PiFactory::_getModel()
 					__LINE__);
 	}
 
-	while (fgets(szLine, 120, cpuFd) != NULL) {
+	while (fgets(szLine, 128, cpuFd) != NULL) {
 		if (strncmp (szLine, "Revision", 8) == 0) {
 			break;
 		}
@@ -96,10 +291,6 @@ int PiFactory::_getModel()
 	for (c = &szLine[lineLength - 1]; (*c == '\n') || (*c == '\r'); --c) {
 		*c = 0;
 	}
-  
-	// Need to work out if it's using the new or old encoding scheme:
-
-	// Scan to the first character of the revision number
 
 	for (c = szLine; *c; ++c) {
 		if (*c == ':') {
@@ -124,59 +315,16 @@ int PiFactory::_getModel()
 	}
 
 	if (!isxdigit(*c)) {
-		printf("No hex digit found at beginning of 'Revision' identifier\n");
+		throw new Exception(
+					ERR_INVALID_FILE_FORMAT,
+					"No hex digit found at beginning of 'Revision' identifier",
+					__FILE__,
+					"PiFactory",
+					"_getModel()",
+					__LINE__);
 	}
 
-	revision = (unsigned int)strtol(c, NULL, 16); // Hex number with no leading 0x
+	revision = (uint32_t)strtol(c, NULL, 16); // Hex number with no leading 0x
 
-	if ((revision & (1 << 23)) != 0)	// New way
-	{
-		model = (revision & (0xFF <<  4)) >>  4;
-	}
-	else					// Old way
-	{
-		if (!isdigit(*c)) {
-			printf("Error - no digit at start of revision");
-		}
-
-		// Extract last 4 characters:
-
-		c = c + strlen(c) - 4;
-
-		// Fill out the replys as appropriate
-
-		/**/ if (strncmp(c, "0002", 4) == 0) { model = PI_MODEL_B; }
-		else if (strncmp(c, "0003", 4) == 0) { model = PI_MODEL_B; }
-                                           
-		else if (strncmp(c, "0004", 4) == 0) { model = PI_MODEL_B; }
-		else if (strncmp(c, "0005", 4) == 0) { model = PI_MODEL_B; }
-		else if (strncmp(c, "0006", 4) == 0) { model = PI_MODEL_B; }
-                                           
-		else if (strncmp(c, "0007", 4) == 0) { model = PI_MODEL_A; }
-		else if (strncmp(c, "0008", 4) == 0) { model = PI_MODEL_A; }
-		else if (strncmp(c, "0009", 4) == 0) { model = PI_MODEL_A; }
-                                           
-		else if (strncmp(c, "000d", 4) == 0) { model = PI_MODEL_B; }
-		else if (strncmp(c, "000e", 4) == 0) { model = PI_MODEL_B; }
-		else if (strncmp(c, "000f", 4) == 0) { model = PI_MODEL_B; }
-                                           
-		else if (strncmp(c, "0010", 4) == 0) { model = PI_MODEL_BP; }
-		else if (strncmp(c, "0013", 4) == 0) { model = PI_MODEL_BP; }
-		else if (strncmp(c, "0016", 4) == 0) { model = PI_MODEL_BP; }
-		else if (strncmp(c, "0019", 4) == 0) { model = PI_MODEL_BP; }
-                                           
-		else if (strncmp(c, "0011", 4) == 0) { model = PI_MODEL_CM; }
-		else if (strncmp(c, "0014", 4) == 0) { model = PI_MODEL_CM; }
-		else if (strncmp(c, "0017", 4) == 0) { model = PI_MODEL_CM; }
-		else if (strncmp(c, "001a", 4) == 0) { model = PI_MODEL_CM; }
-                                           
-		else if (strncmp(c, "0012", 4) == 0) { model = PI_MODEL_AP; }
-		else if (strncmp(c, "0015", 4) == 0) { model = PI_MODEL_AP; }
-		else if (strncmp(c, "0018", 4) == 0) { model = PI_MODEL_AP; }
-		else if (strncmp(c, "001b", 4) == 0) { model = PI_MODEL_AP; }
-                                            
-		else                              { model = 0;  }
-	}
-	
-	return model;
+	return revision;
 }

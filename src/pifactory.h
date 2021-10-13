@@ -7,7 +7,7 @@
 class PiFactory
 {
 	private:
-		static int _getModel();
+		static uint32_t _getRevision();
 		
 	public:
 		static RaspberryPi * makePi();

@@ -18,7 +18,13 @@
 #define PROCESS_PRIORITY			55
 
 
-RaspberryPi::RaspberryPi(uint32_t baseAddress)
+RaspberryPi::RaspberryPi(				
+				Model m, 
+				MemorySize s, 
+				Processor p, 
+				Manufacturer mfr, 
+				char * pszRevision, 
+				uint32_t baseAddress)
 {
 	memFd = open("/dev/mem", O_RDWR | O_SYNC | O_CLOEXEC);
 	
@@ -36,6 +42,13 @@ RaspberryPi::RaspberryPi(uint32_t baseAddress)
 					__LINE__);
 	}
 	
+	this->model = m;
+	this->memSize = s;
+	this->manufacturer = mfr;
+	this->processor = p;
+
+	strcpy(szRevision, pszRevision);
+
 	pPeriBase = baseAddress;
 	
 	_setMaxPriority();
@@ -54,6 +67,163 @@ RaspberryPi::~RaspberryPi()
 	if (this->pPWM != nullptr) {
 		delete pPWM;
 	}
+}
+
+char * RaspberryPi::getInfoString()
+{
+	if (this->pszInfo == nullptr) {
+		pszInfo = (char *)malloc(128);
+
+		if (pszInfo == NULL) {
+			throw new Exception("Error allocating memory");
+		}
+	}
+
+	switch (model) {
+		case Rpi_Model_A:
+			strcpy(pszInfo, "Raspberry Pi Model A");
+			break;
+
+		case Rpi_Model_A_plus:
+			strcpy(pszInfo, "Raspberry Pi Model A+");
+			break;
+
+		case Rpi_Model_B:
+			strcpy(pszInfo, "Raspberry Pi Model B");
+			break;
+
+		case Rpi_Model_B_plus:
+			strcpy(pszInfo, "Raspberry Pi Model B+");
+			break;
+
+		case Rpi_Model_2B:
+			strcpy(pszInfo, "Raspberry Pi Model 2B");
+			break;
+
+		case Rpi_Model_3A_plus:
+			strcpy(pszInfo, "Raspberry Pi Model 3A+");
+			break;
+
+		case Rpi_Model_3B:
+			strcpy(pszInfo, "Raspberry Pi Model 3B");
+			break;
+
+		case Rpi_Model_3B_plus:
+			strcpy(pszInfo, "Raspberry Pi Model 3B+");
+			break;
+
+		case Rpi_Model_400:
+			strcpy(pszInfo, "Raspberry Pi Model 400");
+			break;
+
+		case Rpi_Model_4B:
+			strcpy(pszInfo, "Raspberry Pi Model 4B");
+			break;
+
+		case Rpi_Zero:
+			strcpy(pszInfo, "Raspberry Pi Zero");
+			break;
+
+		case Rpi_ZeroW:
+			strcpy(pszInfo, "Raspberry Pi ZeroW");
+			break;
+
+		case Compute_Module1:
+			strcpy(pszInfo, "Raspberry Pi Compute Module 1");
+			break;
+
+		case Compute_Module3:
+			strcpy(pszInfo, "Raspberry Pi Compute Module 3");
+			break;
+
+		case Compute_Module3_plus:
+			strcpy(pszInfo, "Raspberry Pi Compute Module 3+");
+			break;
+
+		case Compute_Module4:
+			strcpy(pszInfo, "Raspberry Pi Compute Module 4");
+			break;
+
+		case Alpha_prototype:
+			strcpy(pszInfo, "Raspberry Pi Alpha prototype");
+			break;
+
+		case Internal_use_only:
+			strcpy(pszInfo, "Model: Internal Use Only");
+			break;
+
+		default:
+			strcpy(pszInfo, "ERROR: Unknown model");
+			break;
+	}
+
+	strcat(pszInfo, " rev");
+	strcat(pszInfo, szRevision);
+	strcat(pszInfo, " with ");
+
+	switch (memSize) {
+		case _256Mb:
+			strcat(pszInfo, "256Mb RAM");
+			break;
+
+		case _512Mb:
+			strcat(pszInfo, "512Mb RAM");
+			break;
+
+		case _1Gb:
+			strcat(pszInfo, "1024Mb RAM");
+			break;
+
+		case _2Gb:
+			strcat(pszInfo, "2048Mb RAM");
+			break;
+
+		case _4Gb:
+			strcat(pszInfo, "4096Mb RAM");
+			break;
+
+		case _8Gb:
+			strcat(pszInfo, "8192Mb RAM");
+			break;
+
+		default:
+			strcat(pszInfo, "ERROR: Unknown memory size");
+			break;
+	}
+
+	strcat(pszInfo, ", manufactured by ");
+
+	switch (manufacturer) {
+		case SonyUK:
+			strcat(pszInfo, "Sony UK");
+			break;
+
+		case SonyJapan:
+			strcat(pszInfo, "Sony Japan");
+			break;
+
+		case Egoman:
+			strcat(pszInfo, "Egoman");
+			break;
+
+		case Embest:
+			strcat(pszInfo, "Embest");
+			break;
+
+		case Stadium:
+			strcat(pszInfo, "Stadium");
+			break;
+
+		case Qisda:
+			strcat(pszInfo, "Qisda");
+			break;
+
+		default:
+			strcat(pszInfo, "ERROR: Unknown manufacturer");
+			break;
+	}
+
+	return pszInfo;
 }
 
 void RaspberryPi::_setMaxPriority()
@@ -130,16 +300,4 @@ SPI * RaspberryPi::getSpi()
 	}
 	
 	return pSPI;
-}
-
-
-RaspberryPiOriginal::RaspberryPiOriginal(uint32_t baseAddress) : RaspberryPi(baseAddress)
-{
-	// Nowt to do...
-}
-
-
-RaspberryPiNew::RaspberryPiNew(uint32_t baseAddress) : RaspberryPi(baseAddress)
-{
-	// Nowt to do...
 }
