@@ -55,7 +55,8 @@ int main(int argc, char *argv[])
 		/*
 		** Make the correct flavour of Pi...
 		*/
-		pi = PiFactory::makePi();
+		PiFactory factory = PiFactory::getInstance();
+		pi = factory.makePi();
 	}
 	catch (Exception * e) {
 		printf("Caught exception instantiating RaspberryPi: %s\n\n", e->getExceptionString());

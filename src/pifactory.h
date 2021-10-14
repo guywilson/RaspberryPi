@@ -7,10 +7,22 @@
 class PiFactory
 {
 	private:
-		static uint32_t _getRevision();
+		PiFactory();
+		
+		RaspberryPi *				pi = nullptr;
+
+		uint32_t _getRevision();
 		
 	public:
-		static RaspberryPi * makePi();
+		static PiFactory & getInstance() {
+			static PiFactory instance;
+
+			return instance;
+		}
+
+		~PiFactory();
+
+		RaspberryPi * makePi();
 };
 
 #endif

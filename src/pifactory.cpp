@@ -23,10 +23,9 @@
 #define	RASPPI_PERI_BASE_NEW	0x3F000000
 #define RASPPI_PERI_BASE_4		0x7E000000
 
-RaspberryPi * PiFactory::makePi()
+PiFactory::PiFactory()
 {
 	uint32_t						revisionId;
-	RaspberryPi	*					pi;
 	RaspberryPi::Manufacturer		manufacturer;
 	RaspberryPi::MemorySize			memSize;
 	RaspberryPi::Model				model;
@@ -258,7 +257,15 @@ RaspberryPi * PiFactory::makePi()
 					manufacturer,
 					szRevision,
 					baseAddress);
+}
 
+PiFactory::~PiFactory()
+{
+	delete pi;
+}
+
+RaspberryPi * PiFactory::makePi()
+{
 	return pi;
 }
 

@@ -14,6 +14,8 @@
 
 class RaspberryPi
 {
+	friend class PiFactory;
+
 	public:
 		enum Manufacturer {
 			SonyUK = 0,
@@ -62,6 +64,14 @@ class RaspberryPi
 		};
 
 	private:
+		RaspberryPi(
+				Model m, 
+				MemorySize s, 
+				Processor p, 
+				Manufacturer mfr, 
+				char * pszRevision, 
+				uint32_t baseAddress);
+
 		CLOCK	*			pCLOCK	= nullptr;
 		GPIO	*			pGPIO 	= nullptr;
 		SPI		*			pSPI 	= nullptr;
@@ -81,14 +91,6 @@ class RaspberryPi
 		void				_setMaxPriority();
 		
 	public:
-		RaspberryPi(
-				Model m, 
-				MemorySize s, 
-				Processor p, 
-				Manufacturer mfr, 
-				char * pszRevision, 
-				uint32_t baseAddress);
-
 		~RaspberryPi();
 		
 		uint32_t			getBaseAddress();
