@@ -213,46 +213,7 @@ PiFactory::PiFactory()
 		memSize = (RaspberryPi::MemorySize)(revisionIdCopy & 0x07);
 	}
 
-	uint32_t	baseAddress;
-
-	printf("bcm_host_get_peripheral_address -> 0x%08x\n", bcm_host_get_peripheral_address());
-
-	switch (model) {
-		case RaspberryPi::Model::Rpi_Model_A:
-		case RaspberryPi::Model::Rpi_Model_B:
-		case RaspberryPi::Model::Rpi_Model_A_plus:
-		case RaspberryPi::Model::Rpi_Model_B_plus:
-		case RaspberryPi::Model::Alpha_prototype:
-		case RaspberryPi::Model::Compute_Module1:
-		case RaspberryPi::Model::Rpi_Zero:
-			baseAddress = RASPPI_PERI_BASE_OLD;
-			break;
-
-		case RaspberryPi::Model::Rpi_Model_2B:
-		case RaspberryPi::Model::Rpi_Model_3B:
-		case RaspberryPi::Model::Rpi_Model_3A_plus:
-		case RaspberryPi::Model::Rpi_ZeroW:
-		case RaspberryPi::Model::Compute_Module3:
-		case RaspberryPi::Model::Compute_Module3_plus:
-			baseAddress = RASPPI_PERI_BASE_NEW;
-			break ;
-
-		case RaspberryPi::Model::Rpi_Model_4B:
-		case RaspberryPi::Model::Rpi_Model_400:
-		case RaspberryPi::Model::Compute_Module4:
-			baseAddress = RASPPI_PERI_BASE_4;
-			break;
-
-		default:
-			throw new Exception(
-					ERR_INDEX_OUT_OF_RANGE,
-					"Unsupported Rpi Model",
-					__FILE__,
-					"PiFactory",
-					"init()",
-					__LINE__);
-			break;
-	}
+	uint32_t baseAddress = bcm_host_get_peripheral_address();
 	
 	pi = new RaspberryPi(
 					model,
