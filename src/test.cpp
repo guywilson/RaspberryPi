@@ -71,6 +71,8 @@ int main(int argc, char *argv[])
 	try {
 		for (i = 0;i < 6;i++) {
 			fnSelectOrig[i] = pi->getGpio()->getGPFSELN(i);
+
+			printf("GPFSELN[%d] = %ld\n", i, fnSelectOrig[i]);
 		}
 	}
 	catch (Exception * e) {
@@ -155,7 +157,7 @@ void testFlashOutput22(RaspberryPi * pi)
 		GPIO * pGPIO = pi->getGpio();
 
 		printf("Got GPIO...\n");
-		
+
 		pGPIO->setPinFunction(22, fnOutput);
 
 		for (i = 0;i < 20;i++) {
