@@ -154,6 +154,8 @@ void testFlashOutput22(RaspberryPi * pi)
 	try {
 		GPIO * pGPIO = pi->getGpio();
 
+		printf("Got GPIO...\n");
+		
 		pGPIO->setPinFunction(22, fnOutput);
 
 		for (i = 0;i < 20;i++) {
