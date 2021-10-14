@@ -176,6 +176,16 @@ RaspberryPi * PiFactory::makePi()
 				model = RaspberryPi::Model::Rpi_Model_A_plus;
 				pszRevision = "1.1";
 				break;
+
+			default:
+				throw new Exception(
+						ERR_INDEX_OUT_OF_RANGE,
+						"Unsupported Rpi Model",
+						__FILE__,
+						"PiFactory",
+						"init()",
+						__LINE__);
+				break;
 		}
 	}
 	else {
@@ -227,7 +237,7 @@ RaspberryPi * PiFactory::makePi()
 
 		default:
 			throw new Exception(
-					ERR_FILE_OPEN_FAILURE,
+					ERR_INDEX_OUT_OF_RANGE,
 					"Unsupported Rpi Model",
 					__FILE__,
 					"PiFactory",
