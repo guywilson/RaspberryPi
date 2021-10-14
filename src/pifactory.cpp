@@ -187,6 +187,11 @@ RaspberryPi * PiFactory::makePi()
 						__LINE__);
 				break;
 		}
+
+		// Set a default...
+		proc = RaspberryPi::Processor::BCM2835;
+
+		strcpy(szRevision, pszRevision);
 	}
 	else {
 		revisionIdCopy = revisionId;
