@@ -63,6 +63,8 @@ int main(int argc, char *argv[])
 		return(-1);
 	}
 	
+	printf("Made the pi...\n");
+
 	/*
 	** Get the original state of the FnSelect registers...
 	*/
