@@ -3,6 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 
+#include <bcm_host.h>
+
 #include "pifactory.h"
 #include "exception.h"
 
@@ -21,7 +23,7 @@
 
 #define	RASPPI_PERI_BASE_OLD	0x20000000
 #define	RASPPI_PERI_BASE_NEW	0x3F000000
-#define RASPPI_PERI_BASE_4		0x7E000000
+#define RASPPI_PERI_BASE_4		0xFE000000
 
 PiFactory::PiFactory()
 {
@@ -212,6 +214,8 @@ PiFactory::PiFactory()
 	}
 
 	uint32_t	baseAddress;
+
+	printf("bcm_host_get_peripheral_address -> 0x%08x\n", bcm_host_get_peripheral_address());
 
 	switch (model) {
 		case RaspberryPi::Model::Rpi_Model_A:
