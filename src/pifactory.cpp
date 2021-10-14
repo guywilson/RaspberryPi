@@ -3,8 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include <bcm_host.h>
-
 #include "pifactory.h"
 #include "exception.h"
 
@@ -23,7 +21,7 @@
 
 #define	RASPPI_PERI_BASE_OLD	0x20000000
 #define	RASPPI_PERI_BASE_NEW	0x3F000000
-#define RASPPI_PERI_BASE_4		0xFE000000
+#define RASPPI_PERI_BASE_4		0x7E000000
 
 PiFactory::PiFactory()
 {
@@ -213,8 +211,45 @@ PiFactory::PiFactory()
 		memSize = (RaspberryPi::MemorySize)(revisionIdCopy & 0x07);
 	}
 
-	uint32_t baseAddress = bcm_host_get_peripheral_address();
-	
+	uint32_t	baseAddress;
+
+	switch (model) {
+		case RaspberryPi::Model::Rpi_Model_A:
+		case RaspberryPi::Model::Rpi_Model_B:
+		case RaspberryPi::Model::Rpi_Model_A_plus:
+		case RaspberryPi::Model::Rpi_Model_B_plus:
+		case RaspberryPi::Model::Alpha_prototype:
+		case RaspberryPi::Model::Compute_Module1:
+		case RaspberryPi::Model::Rpi_Zero:
+			baseAddress = RASPPI_PERI_BASE_OLD;
+			break;
+
+		case RaspberryPi::Model::Rpi_Model_2B:
+		case RaspberryPi::Model::Rpi_Model_3B:
+		case RaspberryPi::Model::Rpi_Model_3A_plus:
+		case RaspberryPi::Model::Rpi_ZeroW:
+		case RaspberryPi::Model::Compute_Module3:
+		case RaspberryPi::Model::Compute_Module3_plus:
+			baseAddress = RASPPI_PERI_BASE_NEW;
+			break ;
+
+		case RaspberryPi::Model::Rpi_Model_4B:
+		case RaspberryPi::Model::Rpi_Model_400:
+		case RaspberryPi::Model::Compute_Module4:
+			baseAddress = RASPPI_PERI_BASE_4;
+			break;
+
+		default:
+			throw new Exception(
+					ERR_INDEX_OUT_OF_RANGE,
+					"Unsupported Rpi Model",
+					__FILE__,
+					"PiFactory",
+					"init()",
+					__LINE__);
+			break;
+	}
+
 	pi = new RaspberryPi(
 					model,
 					memSize,

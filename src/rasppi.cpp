@@ -52,7 +52,7 @@ RaspberryPi::RaspberryPi(
 	pPeriBase = baseAddress;
 	
 	printf("Revision info: %s\n", getInfoString());
-	printf("Pheripheral base address = 0x%08X\n", baseAddress);
+	printf("Peripheral base address = 0x%08X\n", baseAddress);
 
 	_setMaxPriority();
 }

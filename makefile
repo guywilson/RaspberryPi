@@ -29,18 +29,18 @@ PRECOMPILE = @ mkdir -p $(BUILD) $(DEP)
 # postcompile step
 POSTCOMPILE = @ mv -f $(DEP)/$*.Td $(DEP)/$*.d
 
-CPPFLAGS = -c -O2 -Wall -pedantic -fPIC -std=c++11 -I/opt/vc/include
+CPPFLAGS = -c -O2 -Wall -pedantic -fPIC -std=c++11
 CFLAGS = -c -O2 -Wall -pedantic -fPIC
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP)/$*.Td
 LIBFLAGS = rcs
 
 # Libraries
-STDLIBS = -lstdc++ -lpthread -lbcm_host
+STDLIBS = -lstdc++ -lpthread
 
 COMPILE.cpp = $(CPP) $(CPPFLAGS) $(DEPFLAGS) -o $@
 COMPILE.c = $(C) $(CFLAGS) $(DEPFLAGS) -o $@
 LIB.o = $(LIBMGR) $(LIBFLAGS) $@
-LINK.o = $(LINKER) $(STDLIBS) -L/opt/vc/lib -o $@
+LINK.o = $(LINKER) $(STDLIBS) -o $@
 
 CSRCFILES = $(wildcard $(SOURCE)/*.c)
 CPPSRCFILES = $(wildcard $(SOURCE)/*.cpp)
