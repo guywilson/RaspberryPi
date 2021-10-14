@@ -8,8 +8,8 @@ class PiFactory
 {
 	private:
 		PiFactory();
-		
-		RaspberryPi *				pi = nullptr;
+
+		RaspberryPi *				pi;
 
 		uint32_t _getRevision();
 		
