@@ -96,7 +96,7 @@ class RaspberryPi
 		uint32_t			getBaseAddress();
 
 		CLOCK	*			getClock();
-		GPIO	&			getGpio();
+		GPIO	*			getGpio();
 		SPI		*			getSpi();
 		PWM		*			getPwm();
 
