@@ -274,6 +274,9 @@ uint32_t RaspberryPi::getBaseAddress()
 
 GPIO * RaspberryPi::getGpio()
 {
+	printf("In getGpio()...\n");
+	fflush(stdout);
+	
 	if (this->pGPIO == nullptr) {
 		this->pGPIO = new GPIO(memFd, pPeriBase);
 	}

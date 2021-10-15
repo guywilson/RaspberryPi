@@ -15,13 +15,13 @@
 
 BCM238X_Peripheral::BCM238X_Peripheral(int fd, uint32_t baseAddress)
 {
-	map = 			mmap(
-						0,
-						BLOCK_SIZE,
-						PROT_READ | PROT_WRITE,
-						MAP_SHARED,
-						fd,
-						baseAddress);
+	map = mmap(
+				0,
+				BLOCK_SIZE,
+				PROT_READ | PROT_WRITE,
+				MAP_SHARED,
+				fd,
+				baseAddress);
 
 	if (map < (void *)0) {
 		throw new Exception(

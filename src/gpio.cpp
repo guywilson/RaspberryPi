@@ -23,6 +23,9 @@ GPIO::GPIO(int memFd, uint32_t baseAddress) : GPIOMemory_Peripheral(memFd, baseA
 {
 	int				i;
 	
+	printf("In GPIO constructor...\n");
+	fflush(stdout);
+
 	gpioMap = (GPIO_MAP *)getMemoryMap();
 	
 	for (i = 0;i < 54;i++) {
@@ -296,6 +299,9 @@ void GPIO::clrPin(int pinNum)
 }
 
 uint32_t GPIO::getGPFSELN(int n) {
+	printf("In getGPFSELN()...\n");
+	fflush(stdout);
+	
 	return gpioMap->GPFSEL[n];
 }
 void GPIO::setGPFSELN(int n, uint32_t val) {
