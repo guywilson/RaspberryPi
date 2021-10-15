@@ -15,6 +15,8 @@
 
 BCM238X_Peripheral::BCM238X_Peripheral(int fd, uint32_t baseAddress)
 {
+	printf("Get memory map at address 0x%08X\n", baseAddress);
+	
 	map = mmap(
 				0,
 				BLOCK_SIZE,
