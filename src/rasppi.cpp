@@ -272,16 +272,10 @@ uint32_t RaspberryPi::getBaseAddress()
 	return pPeriBase;
 }
 
-GPIO * RaspberryPi::getGpio()
+GPIO & RaspberryPi::getGpio()
 {
-	if (this->pGPIO == nullptr) {
-		printf("In getGpio()...\n");
-		fflush(stdout);
-	
-		this->pGPIO = new GPIO(memFd, pPeriBase);
-	}
-	
-	return pGPIO;
+	static GPIO gpio(memFd, pPeriBase);
+	return gpio;
 }
 
 CLOCK * RaspberryPi::getClock()
