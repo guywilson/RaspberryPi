@@ -54,6 +54,8 @@ RaspberryPi::RaspberryPi(
 	printf("Revision info: %s\n", getInfoString());
 	printf("Peripheral base address = 0x%08X\n", baseAddress);
 
+	pGPIO = new GPIO(memFd, pPeriBase);
+	
 	_setMaxPriority();
 }
 
@@ -272,10 +274,9 @@ uint32_t RaspberryPi::getBaseAddress()
 	return pPeriBase;
 }
 
-GPIO & RaspberryPi::getGpio()
+GPIO * RaspberryPi::getGpio()
 {
-	static GPIO gpio(memFd, pPeriBase);
-	return gpio;
+	return pGPIO;
 }
 
 CLOCK * RaspberryPi::getClock()
