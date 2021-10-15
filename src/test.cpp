@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 	*/
 	try {
 		for (i = 0;i < 6;i++) {
-			fnSelectOrig[i] = pi->getGpio().getGPFSELN(i);
+			fnSelectOrig[i] = pi->getGpio()->getGPFSELN(i);
 
 			printf("GPFSELN[%d] = %ld\n", i, fnSelectOrig[i]);
 		}
